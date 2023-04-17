@@ -1,0 +1,67 @@
+@if (Content != null)
+{
+    <div
+        class='
+        w-80 shadow-md @Content.ClassName
+        @(Content.Level switch
+        {
+            LEVEL.Info => "bg-info-500 text-info-500 dark:text-info-400",
+            LEVEL.Success => "bg-success-500 text-success-500 dark:text-success-400",
+            LEVEL.Warning => "bg-warning-500 text-warning-500 dark:text-warning-300",
+            LEVEL.Error => "bg-danger-500 dark:bg-danger-500 text-danger-500 dark:text-danger-400",
+            _ => throw new NotImplementedException(nameof(Content.Level))
+        })
+        '
+    >
+        <div
+            class='
+            w-full bg-white dark:bg-slate-800 bg-opacity-90 dark:bg-opacity-90 bg-blend-normal
+            font-light space-x-2 px-4 py-2
+            flex overflow-hidden
+            '
+            @onclick=@(() => Content.Remove())
+        >
+
+            <div
+                class='
+                flex items-center justify-center
+                '
+            >
+                <i
+                    class='
+                    text-xl
+                    @(Content.Level switch
+                    {
+                        LEVEL.Info => "icon-rr-info",
+                        LEVEL.Success => "icon-rr-like",
+                        LEVEL.Warning => "icon-rr-warning",
+                        LEVEL.Error => "icon-rr-dislike",
+                        _ => throw new NotImplementedException(nameof(Content.Level))
+                    })
+                    '
+                >
+                </i>
+            </div>
+
+            <span>
+                @Content.Message
+            </span>
+
+        </div>
+    </div>
+}
+
+@code
+{
+    string color = string.Empty;
+
+    public enum LEVEL { Info, Warning, Error, Success };
+    public record Alert(LEVEL Level, string Message)
+    {
+        public Action? OnRemove { get; set; } = null;
+        public string ClassName { get; set; } = "animate-alert_slide_left";
+        public void Remove() => OnRemove?.Invoke();
+    };
+
+    [Parameter] public Alert? Content { get; set; } = null;
+}

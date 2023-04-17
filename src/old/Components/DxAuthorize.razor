@@ -1,0 +1,21 @@
+@inject NavigationManager nav
+
+<AuthorizeView Policy=@Policy>
+    <Authorized>
+        @ChildContent
+    </Authorized>
+
+    <NotAuthorized>
+        @if (true && OnUnauthorizedGoTo != string.Empty)
+        {
+            nav.NavigateTo(OnUnauthorizedGoTo);
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    [Parameter] public string OnUnauthorizedGoTo { get; set; } = string.Empty;
+    [Parameter] public string Policy { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
+}

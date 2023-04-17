@@ -1,0 +1,66 @@
+.dxactioncard-parent
+{
+    @apply
+    /* background */
+    bg-white dark:bg-slate-700
+    /* text */
+    text-slate-600 dark:text-slate-200
+    /* effects */
+    shadow-sm rounded-md
+    /* borders */
+    border-t-2 border-t-slate-50 dark:border-t-slate-600 
+    border-r-2 border-r-slate-50 dark:border-r-slate-600
+}
+
+.dxactioncard-content
+{
+    @apply
+    /* padding */
+    p-5
+}
+
+.dxactioncard-menu
+{
+    @apply
+    /* effects */
+    rounded-md
+    /* background */
+    bg-white  dark:bg-slate-700
+    /* text */
+    text-slate-600 dark:text-slate-200
+}
+
+.dxactioncard-menubutton
+{
+    @apply
+    /* location */
+    top-1 right-1
+}
+
+.dxactioncard-closeicon
+{
+    @apply icon-cross-regular
+}
+
+.dxactioncard-openicon
+{
+    @apply icon-dots-vertical-regular
+}
+
+.dxactioncard-actionmenu
+{
+    @apply
+    /* effects */
+    rounded-b-md
+    /* background */
+    bg-white dark:bg-slate-700
+    /* text */
+    text-slate-600 dark:text-slate-300
+}
+
+.dxactioncard-infotext
+{
+    @apply
+    /* text */
+    text-sm text-slate-400 font-medium
+}

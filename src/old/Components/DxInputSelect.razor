@@ -1,0 +1,128 @@
+@implements IDisposable
+@inherits InputSelect<TItemValue>
+@typeparam TItem
+@typeparam TItemValue
+
+
+@if (ShowIf)
+{
+    <div class="w-full @CssClass">
+        @if (!string.IsNullOrWhiteSpace(Label))
+        {
+            <label class="font-medium text-slate-400 mb-1" for=@FieldIdentifier.FieldName>
+                @Label
+            </label>
+        }
+
+        <select
+            id=@FieldIdentifier.FieldName
+            disabled=@(!Enabled || forceDisabled)
+            @bind=CurrentValue
+            @bind:event='oninput'
+            @onchange=OnSelectedValueChanged
+            class='
+                relative w-full rounded-md border
+                bg-white dark:bg-slate-800
+                text-slate-700 dark:text-slate-300
+                placeholder:text-slate-300 dark:placeholder:text-slate-600
+                disabled:pointer-events-none disabled:opacity-50 dark:disabled:opacity-40
+                dxinput @InnerClass
+                @(
+                    Size switch
+                    {
+                        var x when x == Sizes.Small => "text-sm px-3 py-1",
+                        var x when x == Sizes.Medium => "text-base px-4 py-2",
+                        var x when x == Sizes.Large => "text-lg px-5 py-2",
+                        _ => throw new ArgumentException($"Invalid size {Size}")
+                    }
+                )
+            '
+            @onkeypress=
+            '@(
+                async e =>
+                {
+                    if (e.Key == "Enter" && OnEnterKeyPress.HasDelegate)
+                        await OnEnterKeyPress.InvokeAsync();
+                }
+            )'
+        >
+            @if (ItemValue is not null)
+            {
+                @foreach (var item in Items)
+                {
+                    <option value=@ItemValue.Invoke(item)>
+                        @ItemLabel.Invoke(item)
+                    </option>
+                }
+            }
+        </select>
+    </div>
+}
+
+
+@code
+{
+    bool forceDisabled;
+
+    public sealed class Sizes : SmartEnum<Sizes, byte>
+    {
+        public static readonly Sizes Small = new(0, nameof(Small));
+        public static readonly Sizes Medium = new(1, nameof(Medium));
+        public static readonly Sizes Large = new(2, nameof(Large));
+
+        private Sizes(byte value, string name) : base(name, value) {}
+    }    
+
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public Sizes Size { get; set; } = Sizes.Medium;
+    [Parameter] public EventCallback OnEnterKeyPress { get; set; }
+    [Parameter] public bool ShowIf { get; set; } = true;
+    [Parameter] public string InnerClass { get; set; } = string.Empty;
+
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = Array.Empty<TItem>();
+
+    protected override void OnInitialized()
+    {
+        if (ParentCard != null)
+        {
+            ParentCard.OnStateChanged += OnParentCardStateChanged;
+        }
+    }
+
+    void OnParentCardStateChanged(object? s, DxCard.DxCardState state)
+    {
+        forceDisabled = state.Disabled;
+    }
+
+    public void Dispose()
+    {
+        if (ParentCard != null)
+            ParentCard.OnStateChanged -= OnParentCardStateChanged;
+    }
+
+    void OnSelectedValueChanged(ChangeEventArgs e)
+    {
+        // Select item
+        if (ItemValue is null) return;
+
+        var newSelectedItem = Items.FirstOrDefault(x => ItemValue.Invoke(x).Equals(e.Value));
+        if (SelectedItem is null)
+        {
+            if (newSelectedItem is null) return;
+        }
+        else
+        {
+            if (SelectedItem.Equals(newSelectedItem)) return;
+        }
+
+        SelectedItem = newSelectedItem;
+        SelectedItemChanged.InvokeAsync(newSelectedItem);
+    }
+
+    [Parameter] public Func<TItem, TItemValue>? ItemValue { get; set; } = null;
+    [Parameter] public Func<TItem, string> ItemLabel { get; set; } = _ => "?";
+    [Parameter] public TItem? SelectedItem { get; set; }
+    [Parameter] public EventCallback<TItem> SelectedItemChanged { get; set; }
+    [CascadingParameter] public DxCard? ParentCard { get; set; } = null;
+}

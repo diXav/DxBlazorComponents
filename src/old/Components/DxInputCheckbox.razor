@@ -1,0 +1,44 @@
+@implements IDisposable
+
+@if (Visible)
+{
+    <div
+        class='
+        @Class
+        w-auto flex items-center gap-2
+        text-slate-700 dark:text-slate-300
+        @(
+            Size switch
+            {
+                var x when x == DxComSize.Small => "text-sm",
+                var x when x == DxComSize.Medium => "text-base",
+                var x when x == DxComSize.Large => "text-lg",
+                _ => throw new ArgumentException($"Invalid size {Size}")
+            }
+        )
+        '
+    >
+        <input
+            id=@Id
+            disabled=@(Disabled || forceDisabled)
+            type="checkbox"
+            @bind=Value
+            class='
+            disabled:pointer-events-none disabled:opacity-50 dark:disabled:opacity-40
+            @InnerClass
+            '
+            @onkeypress=
+            '@(
+                async e =>
+                {
+                    if (e.Key == "Enter" && OnEnterKeyPress.HasDelegate)
+                        await OnEnterKeyPress.InvokeAsync();
+                }
+            )'
+        >
+
+        <label for=@Id>
+            @Label
+        </label>
+    </div>
+}

@@ -1,0 +1,56 @@
+@implements IDisposable
+
+@if (IsHidden)
+{
+    <button
+        id=@Id
+        type="button"
+        disabled='@(DisabledState)'
+        @onclick=InvokeClick
+        class='
+        @Class dxbtn
+        flex items-center justify-center tracking-wide 
+        @(HasIcon ? "" : "space-x-2")
+        @(LoadingState ? "dxbutton-loading" : "dxbutton-idle")
+        @(IsFullWidth ? "w-full" : "w-auto")
+        @(Color.Name) @(Size.Name) @(Variant.Name)
+        @(HasIcon ? "_icon" : "_noicon")
+        '
+    >
+        @* Loading Spinner *@
+        <DxSpinner />
+
+        @* Left Icon *@
+        <i class=@LeftIconClass hidden='@(LeftIconClass == string.Empty || LoadingState)' />
+
+        @* Right Icon *@
+        <i class=@RightIconClass hidden='@(RightIconClass == string.Empty || LoadingState)' />
+
+        @* Icon Only *@
+        <i class='@IconClass no-underline' hidden='@(IconClass == string.Empty || LoadingState)' />
+
+        @* Icon Only Text *@
+        <span
+            class='
+            @(
+                Size switch
+                {
+                    var x when x == DxComSize.Small => "text-xs",
+                    var x when x == DxComSize.Medium => "text-sm",
+                    var x when x == DxComSize.Large => "text-base",
+                    _ => throw new ArgumentException($"Invalid size {Size}")
+                }
+            )'
+            hidden='@(IconClass == string.Empty || Text == string.Empty)'
+        >
+            @(LoadingState ? loadingText : Text)
+        </span>
+
+        @* Normal Text *@
+        <span hidden='@(IconClass != string.Empty || LoadingState)'>@Text</span>
+
+        @* Loading Text *@
+        <span hidden='@(IconClass != string.Empty || !LoadingState)'>@loadingText</span>
+        
+    </button>
+}

@@ -1,0 +1,133 @@
+@inject ILogger<DxCard> logger
+@inject IJSRuntime js
+
+<CascadingValue Value='this'>
+    @* Main container *@
+    <div
+        id=@state.Id
+        class='
+        @Class
+        flex flex-col
+        shadow-sm rounded-md
+        bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200
+        border-t-slate-50 border-r-slate-50 dark:border-t-slate-600 dark:border-r-slate-600 border-t-2 border-r-2
+        @(Highlight ? "border-l-4 border-l-teal-300" : "")
+        '
+    >
+        <div class="p-5 items-start relative flex flex-col grow">
+
+            @Content
+
+            @* Menu *@
+            @if (Menu != null && state.MenuVisible)
+            {
+                <div
+                    class=
+                    "
+                    w-full h-full absolute top-0 left-0 
+                    flex items-center justify-evenly
+                    rounded-md
+                    bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200
+                    "
+                >
+                    @Menu
+                </div>
+            }
+
+            @* Open / Close Menu Button *@
+            @if (Menu != null)
+            {
+                <DxButton
+                    class="absolute top-1 right-1"
+                    Disabled=state.Disabled
+                    OnClick='@(() => state.MenuVisible = !state.MenuVisible)'
+                    Variant=DxComVariant.Text
+                    Color=DxComColor.Default
+                    Size=DxComSize.Small
+                    Icon='@(state.MenuVisible ? "icon-cross-regular" : "icon-dots-vertical-regular")'
+                />
+            }
+        </div>
+
+        @* Action Menu *@
+        @if (ActionMenu != null)
+        {
+            <div class="rounded-b-md w-full bg-white text-slate-600 dark:bg-slate-700 dark:text-slate-300 flex items-center mt-1">
+                <span class="text-sm text-slate-400 font-medium ml-4">
+                    @InfoText
+                </span>
+
+                <div class="grow"></div>
+
+                @ActionMenu
+            </div>
+        }
+
+    </div>
+</CascadingValue>
+
+@code
+{
+    readonly DxCardState state = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        await js.AddOutsideClickListener(DotNetObjectReference.Create(this), nameof(OnCardOutsideClick), state.Id);
+    }
+
+    /// <summary>
+    /// Allow child buttons (DxButton) to communicate when it's click handler started,
+    /// useful for child-parent loading state communication
+    /// </summary>
+    public void OnChildButtonHandlerStarted()
+    {
+        state.Disabled = true;
+
+        OnStateChanged?.Invoke(this, state);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Allow child buttons (DxButton) to communicate when it's click handler finished
+    /// useful for child-parent loading state communication
+    /// </summary>
+    public void OnChildButtonHandlerFinished()
+    {
+        state.Disabled = false;
+        state.MenuVisible = false;
+
+        OnStateChanged?.Invoke(this, state);
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnCardOutsideClick()
+    {
+        if (state.Disabled)
+            return;
+
+        state.MenuVisible = false;
+        OnStateChanged?.Invoke(this, state);
+        StateHasChanged();
+    }
+
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public string InfoText { get; set; } = string.Empty;
+    [Parameter] public bool Highlight { get; set; } = false;
+    
+    public sealed record DxCardState
+    {
+        public string Id { get; set; } = "menu-button-" + Guid.NewGuid().ToString();
+        public bool Disabled { get; set; } = false;
+        public bool MenuVisible { get; set; } = false;
+    }
+
+    public event EventHandler<DxCardState>? OnStateChanged;
+
+    // Content
+    [Parameter] public RenderFragment? Menu { get; set; } = null;
+    [Parameter] public RenderFragment? ActionMenu { get; set; } = null;
+    [Parameter] public RenderFragment? Content { get; set; } = null;
+}

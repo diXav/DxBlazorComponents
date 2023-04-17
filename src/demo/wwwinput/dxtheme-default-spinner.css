@@ -1,0 +1,7 @@
+/* 
+variant solid
+*/
+.dxspin._solid
+{
+    @apply border-white dark:border-slate-800
+}

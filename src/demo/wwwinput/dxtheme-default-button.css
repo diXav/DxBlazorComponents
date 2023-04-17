@@ -1,0 +1,193 @@
+/*
+base (common) styles on button
+*/
+.dxbtn
+{
+    @apply
+    disabled:shadow-inner
+    transition duration-75 transform
+    rounded-lg
+}
+
+/*
+button will alternate between loading and idle state
+*/
+.dxbtn-loading
+{
+    @apply animate-[pulse_1s_ease-in-out_infinite] disabled:opacity-75
+}
+
+.dxbtn-idle
+{
+    @apply disabled:opacity-50
+}
+
+/*
+variants
+*/
+.dxbtn._solid { @apply hover:opacity-85 active:opacity-70 shadow-md }
+.dxbtn._outline { @apply hover:opacity-90 active:opacity-80 shadow-md bg-transparent border }
+.dxbtn._text { @apply hover:opacity-90 active:opacity-80 bg-transparent }
+.dxbtn._link { @apply hover:opacity-75 active:opacity-50 underline underline-offset-2 bg-transparent }
+
+/* 
+solid variant colors
+*/
+.dxbtn._solid._default { @apply text-slate-50 dark:text-slate-700 bg-slate-700 dark:bg-slate-50 }
+.dxbtn._solid._primary { @apply text-white bg-primary-500 dark:bg-primary-400 }
+.dxbtn._solid._secondary { @apply text-white bg-secondary-500 dark:bg-secondary-400 }
+.dxbtn._solid._success { @apply text-white bg-success-500 dark:bg-success-400 }
+.dxbtn._solid._error { @apply text-white bg-danger-500 dark:bg-danger-400 }
+
+/*
+outline variant colors
+*/
+.dxbtn._outline._default { @apply border-slate-800 dark:border-slate-50 }
+.dxbtn._outline._primary { @apply border-primary-500 dark:border-primary-400 box-border }
+.dxbtn._outline._secondary { @apply border-secondary-500 dark:border-secondary-400 box-border }
+.dxbtn._outline._success { @apply border-success-500 dark:border-success-400 }
+.dxbtn._outline._error { @apply border-danger-500 dark:border-danger-400 }
+
+/* outline, text and link variants color */
+.dxbtn._outline._default,
+.dxbtn._text._default,
+.dxbtn._link._default
+{
+    @apply text-slate-800 dark:text-slate-50
+}
+
+.dxbtn._outline._primary,
+.dxbtn._text._primary,
+.dxbtn._link._primary
+{
+    @apply text-primary-500 dark:text-primary-400
+}
+
+.dxbtn._outline._secondary,
+.dxbtn._text._secondary,
+.dxbtn._link._secondary
+{
+    @apply text-secondary-500 dark:text-secondary-400
+}
+
+.dxbtn._outline._success,
+.dxbtn._text._success,
+.dxbtn._link._success
+{
+    @apply text-success-500 dark:text-success-400
+}
+
+.dxbtn._outline._error,
+.dxbtn._text._error,
+.dxbtn._link._error
+{
+    @apply text-danger-500 dark:text-danger-400
+}
+
+/*
+icon only button
+*/
+.dxbtn._icon
+{
+    @apply inline-grid
+}
+
+/* solid and outline variants sizing with icon */
+.dxbtn._solid._sm._icon,
+.dxbtn._outline._sm._icon
+{
+    @apply text-base p-2
+}
+
+.dxbtn._solid._md._icon,
+.dxbtn._outline._md._icon
+{
+    @apply text-lg p-4
+}
+
+.dxbtn._solid._lg._icon,
+.dxbtn._outline._lg._icon
+{
+    @apply text-xl p-6
+}
+
+.dxbtn._solid._xl._icon,
+.dxbtn._outline._xl._icon
+{
+    @apply text-2xl p-8
+}
+
+/* solid and outline variants sizing without icon */
+.dxbtn._solid._sm._noicon,
+.dxbtn._outline._sm._noicon
+{
+    @apply text-sm px-3 py-1
+}
+
+.dxbtn._solid._md._noicon,
+.dxbtn._outline._md._noicon
+{
+    @apply text-base px-5 py-2
+}
+
+.dxbtn._solid._lg._noicon,
+.dxbtn._outline._lg._noicon
+{
+    @apply text-lg px-7 py-2
+}
+
+.dxbtn._solid._xl._noicon,
+.dxbtn._outline._xl._noicon
+{
+    @apply text-xl px-9 py-3
+}
+
+/* text and link variants sizing (icon only) */
+.dxbtn._text._sm._icon,
+.dxbtn._link._sm._icon
+{
+    @apply text-base p-1
+}
+
+.dxbtn._text._md._icon,
+.dxbtn._link._md._icon
+{
+    @apply text-lg p-2
+}
+
+.dxbtn._text._lg._icon,
+.dxbtn._link._lg._icon
+{
+    @apply text-xl p-3
+}
+
+.dxbtn._text._xl._icon,
+.dxbtn._link._xl._icon
+{
+    @apply text-2xl p-4
+}
+
+/* text and link variants sizing (text only) */
+.dxbtn._text._sm._noicon,
+.dxbtn._link._sm._noicon
+{
+    @apply text-sm px-2
+}
+
+.dxbtn._text._md._noicon,
+.dxbtn._link._md._noicon
+{
+    @apply text-base px-2 py-1
+}
+
+.dxbtn._text._lg._noicon,
+.dxbtn._link._lg._noicon
+{
+    @apply text-lg px-4 py-2
+}
+
+.dxbtn._text._xl._noicon,
+.dxbtn._link._xl._noicon
+{
+    @apply text-xl px-5 py-3
+}

@@ -1,0 +1,42 @@
+<div class="dxspin relative h-4 w-4 justify-self-center @(Color.Name) @(Variant.Name)" hidden='@(IsHidden)'>
+    <div
+        class='
+        border-2 opacity-50 absolute h-full w-full rounded-full border-solid
+        @(
+            Variant == DxComVariant.Solid ? "" :
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "border-primary-500 dark:border-primary-400",
+                var x when x == DxComColor.Success => "border-primary-500 dark:border-primary-400",
+                var x when x == DxComColor.Error => "border-danger-500 dark:border-danger-400",
+                var x when x == DxComColor.Default => "border-slate-800 dark:border-white",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            }
+        )
+        '
+    ></div>
+
+    <div
+        class='
+        border-2 border-transparent absolute h-full w-full rounded-full border-solid animate-spin
+        @(
+            Variant == DxComVariant.Solid ? "border-b-white" :
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "border-b-primary-500 dark:border-b-primary-400",
+                var x when x == DxComColor.Success => "border-b-primary-500 dark:border-b-primary-400",
+                var x when x == DxComColor.Error => "border-b-danger-500 dark:border-b-danger-400",
+                var x when x == DxComColor.Default => "border-b-slate-800 dark:border-b-white",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            }
+        )
+        '
+    ></div>
+</div>
+
+@code
+{
+    [Parameter] public bool IsHidden { get; set; }
+    [Parameter] public DxColor Color { get; set; } = DxColor.None;
+    [Parameter] public DxVariant Variant { get; set; } = DxVariant.None;
+}

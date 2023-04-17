@@ -1,0 +1,285 @@
+@implements IDisposable
+@inject ILogger<DxButton> logger
+
+@if (ShowIf)
+{
+    <button
+        id=@Id
+        type="button"
+        disabled=@(Disabled || IsLoading || forceDisabled)
+        @onclick=InvokeClick
+        class=
+        '
+        @Class
+        flex items-center justify-center
+        @(Icon != string.Empty ? "" : "space-x-2")
+        tracking-wide disabled:shadow-inner
+        transition duration-75 transform rounded-lg
+        @(IsLoading ? "animate-[pulse_1s_ease-in-out_infinite] disabled:opacity-75" : "disabled:opacity-50")
+        @(FullWidth ? "w-full" : "w-auto")
+        @( @* hover / click opacity effect *@
+            Variant == DxComVariant.Solid ? "hover:opacity-85 active:opacity-70" :
+            Variant == DxComVariant.Outline ? "hover:opacity-90 active:opacity-80" :
+            Variant == DxComVariant.Text ? "hover:opacity-90 active:opacity-80" :
+            Variant == DxComVariant.Link ? "hover:opacity-75 active:opacity-50" :
+            throw new ArgumentException($"Invalid variant {Variant}")
+        )
+        @( @* shadow or underline effects *@
+            Variant == DxComVariant.Solid ? "shadow-md " :
+            Variant == DxComVariant.Outline ? "shadow-md " :
+            Variant == DxComVariant.Text ? "" :
+            Variant == DxComVariant.Link ? "underline underline-offset-2" :
+            throw new ArgumentException($"Invalid variant {Variant}")
+        )
+        @( @* text and background colors*@
+            Variant == DxComVariant.Solid ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-white bg-primary-500 dark:bg-primary-400",
+                var x when x == DxComColor.Success => "text-white bg-success-500 dark:bg-success-400",
+                var x when x == DxComColor.Error => "text-white bg-danger-500 dark:bg-danger-400",
+                var x when x == DxComColor.Default => "text-slate-50 dark:text-slate-700 bg-slate-700 dark:bg-slate-50",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            Variant == DxComVariant.Outline ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-primary-500 dark:text-primary-400 bg-transparent",
+                var x when x == DxComColor.Success => "text-success-500 dark:text-success-400 bg-transparent",
+                var x when x == DxComColor.Error => "text-danger-500 dark:text-danger-400 bg-transparent",
+                var x when x == DxComColor.Default => "text-slate-700 dark:text-slate-50 bg-transparent",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            Variant == DxComVariant.Text ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-primary-500 dark:text-primary-400 bg-transparent",
+                var x when x == DxComColor.Success => "text-success-500 dark:text-success-400 bg-transparent",
+                var x when x == DxComColor.Error => "text-danger-500 dark:text-danger-400 bg-transparent",
+                var x when x == DxComColor.Default => "text-slate-700 dark:text-slate-50 bg-transparent",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            Variant == DxComVariant.Link ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-primary-500 dark:text-primary-400 bg-transparent",
+                var x when x == DxComColor.Success => "text-success-500 dark:text-success-400 bg-transparent",
+                var x when x == DxComColor.Error => "text-danger-500 dark:text-danger-400 bg-transparent",
+                var x when x == DxComColor.Default => "text-slate-700 dark:text-slate-50 bg-transparent",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            throw new ArgumentException($"Invalid variant {Variant}")
+        )
+        @( @* border color *@
+            Variant == DxComVariant.Outline ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "box-border border border-primary-500 dark:border-primary-400",
+                var x when x == DxComColor.Success => "border border-success-500 dark:border-success-400",
+                var x when x == DxComColor.Error => "border border-danger-500 dark:border-danger-400",
+                var x when x == DxComColor.Default => "border border-slate-800 dark:border-slate-50",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            ""
+        )
+        @( @* text size and paddings *@
+            Variant == DxComVariant.Solid || Variant == DxComVariant.Outline ?
+            Size switch
+            {
+                var x when x == DxComSize.Small => string.IsNullOrEmpty(Icon)
+                    ? "text-sm px-3 py-1"
+                    : "text-base p-2 inline-grid",
+                var x when x == DxComSize.Medium => string.IsNullOrEmpty(Icon)
+                    ? "text-base px-5 py-2"
+                    : "text-lg p-4 inline-grid",
+                var x when x == DxComSize.Large => string.IsNullOrEmpty(Icon)
+                    ? "text-lg px-7 py-2"
+                    : "text-xl p-6 inline-grid",
+                _ => throw new ArgumentException($"Invalid size {Size}")
+            } :
+            Size switch
+            {
+                var x when x == DxComSize.Small => string.IsNullOrEmpty(Icon)
+                    ? "text-sm px-2"
+                    : "text-base p-1 inline-grid",
+                var x when x == DxComSize.Medium => string.IsNullOrEmpty(Icon)
+                    ? "text-base px-2 py-1"
+                    : "text-lg p-2 inline-grid",
+                var x when x == DxComSize.Large => string.IsNullOrEmpty(Icon)
+                    ? "text-lg px-4 py-2"
+                    : "text-xl p-3 inline-grid",
+                _ => throw new ArgumentException($"Invalid size {Size}")
+            }
+        )
+        '
+    >
+        @* Loading Spinner *@
+        <div class="spinner-wrapper h-4 w-4 justify-self-center" hidden='@(!IsLoading)'>
+            <div
+                class='
+                border-2 opacity-50
+                @(
+                    Variant == DxComVariant.Solid ? "border-white dark:border-slate-800 " :
+                    Color switch
+                    {
+                        var x when x == DxComColor.Accent => "border-primary-500 dark:border-primary-400",
+                        var x when x == DxComColor.Success => "border-primary-500 dark:border-primary-400",
+                        var x when x == DxComColor.Error => "border-danger-500 dark:border-danger-400",
+                        var x when x == DxComColor.Default => "border-slate-800 dark:border-white",
+                        _ => throw new ArgumentException($"Invalid color {Color}")
+                    }
+                )
+                '
+            ></div>
+
+            <div
+                class='
+                border-2 border-transparent
+                @(
+                    Variant == DxComVariant.Solid ? "border-b-white" :
+                    Color switch
+                    {
+                        var x when x == DxComColor.Accent => "border-b-primary-500 dark:border-b-primary-400",
+                        var x when x == DxComColor.Success => "border-b-primary-500 dark:border-b-primary-400",
+                        var x when x == DxComColor.Error => "border-b-danger-500 dark:border-b-danger-400",
+                        var x when x == DxComColor.Default => "border-b-slate-800 dark:border-b-white",
+                        _ => throw new ArgumentException($"Invalid color {Color}")
+                    }
+                )
+                '
+            ></div>
+        </div>
+
+        @* Left Icon *@
+        <i class=@LeftIcon hidden='@(LeftIcon == string.Empty || IsLoading)' />
+
+        @* Right Icon *@
+        <i class=@RightIcon hidden='@(RightIcon == string.Empty || IsLoading)' />
+
+        @* Icon Only *@
+        <i class='@Icon no-underline' hidden='@(Icon == string.Empty || IsLoading)' />
+
+        @* Icon Only Text *@
+        <span
+            class='
+            @(
+                Size switch
+                {
+                    var x when x == DxComSize.Small => "text-xs",
+                    var x when x == DxComSize.Medium => "text-sm",
+                    var x when x == DxComSize.Large => "text-base",
+                    _ => throw new ArgumentException($"Invalid size {Size}")
+                }
+            )'
+            hidden='@(Icon == string.Empty || Text == string.Empty)'
+        >
+            @(IsLoading ? loadingText : Text)
+        </span>
+
+        @* Normal Text *@
+        <span hidden='@(Icon != string.Empty || IsLoading)'>@Text</span>
+
+        @* Loading Text *@
+        <span hidden='@(Icon != string.Empty || !IsLoading)'>@loadingText</span>
+        
+    </button>
+}
+
+@code
+{
+    bool loading;
+    string loadingText = "Cargando";
+    bool IsLoading => loading || LockLoadingState;
+    bool IsDisabled => Disabled || forceDisabled;
+    bool forceDisabled = false;
+
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public DxComColor Color { get; set; } = DxComColor.Accent;
+    [Parameter] public DxComSize Size { get; set; } = DxComSize.Medium;
+    [Parameter] public DxComVariant Variant { get; set; } = DxComVariant.Outline;
+    [Parameter] public string Icon { get; set; } = string.Empty;
+    [Parameter] public string LeftIcon { get; set; } = string.Empty;
+    [Parameter] public string RightIcon { get; set; } = string.Empty;
+    [Parameter] public bool FullWidth { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public string Id { get; set; } = string.Empty;
+    [Parameter] public bool ShowIf { get; set; } = true;
+    [Parameter] public bool LockLoadingState { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        if (ParentCard != null)
+        {
+            ParentCard.OnStateChanged += OnParentCardStateChanged;
+        }
+    }
+
+    void OnParentCardStateChanged(object? s, DxCard.DxCardState state)
+    {
+        forceDisabled = state.Disabled;
+    }
+
+    public void Dispose()
+    {
+        if (ParentCard != null)
+            ParentCard.OnStateChanged -= OnParentCardStateChanged;
+    }
+
+    /// <summary>
+    /// Simple click handler
+    ///</summary>
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>
+    /// Custom click handler Task with loading messages and states logic
+    /// </summary>
+    [Parameter] public EventCallback<EventCallbackInfo> OnClickTask { get; set; }
+
+    async Task InvokeClick()
+    {
+        await Task.Delay(10); // validator.Validate() bugfix
+        if (!OnClick.HasDelegate && !OnClickTask.HasDelegate)
+        {
+            logger.LogWarning("No click handler defined for button");
+            return;
+        }
+
+        // Simple click handler
+        if (OnClick.HasDelegate)
+        {
+            loading = true;
+            StateHasChanged();
+
+            await OnClick.InvokeAsync();
+
+            loading = false;
+            return;
+        }
+
+        // Task handler
+        var callbackInfo = new EventCallbackInfo();
+
+        callbackInfo.OnCurrentStateMessageChanged = newMessage =>
+        {
+            loadingText = newMessage;
+            StateHasChanged();
+        };
+
+        if (ParentCard is not null)
+            ParentCard.OnChildButtonHandlerStarted();
+
+        loading = true;
+        await InvokeAsync(StateHasChanged);
+        
+        await OnClickTask.InvokeAsync(callbackInfo);
+        loading = false;
+
+        callbackInfo.OnCurrentStateMessageChanged = null;
+
+        if (ParentCard is not null)
+            ParentCard.OnChildButtonHandlerFinished();
+    }
+
+    [CascadingParameter] public DxCard? ParentCard { get; set; } = null;
+}

@@ -1,0 +1,115 @@
+@using System.Linq.Expressions
+@using static DxInputText
+@inherits InputBase<string>
+
+@if (ShowIf)
+{
+    <div class='w-full @CssClass'>
+        @if (!string.IsNullOrWhiteSpace(Label))
+        {
+            <label class="font-medium text-slate-400 mb-1" for=@FieldIdentifier.FieldName>
+                @Label
+            </label>
+        }
+
+        <div class="relative block w-full">
+            <textarea
+                id=@FieldIdentifier.FieldName
+                @bind=@CurrentValue
+                placeholder=@Placeholder
+                disabled=@(!Enabled)
+                rows=@Rows
+                class=
+                '
+                    relative w-full rounded-md border 
+                    bg-white dark:bg-slate-800
+                    text-slate-700 dark:text-slate-300
+                    placeholder:text-slate-300 dark:placeholder:text-slate-600
+                    disabled:pointer-events-none disabled:opacity-50 dark:disabled:opacity-40
+                    dxinput @InnerClass
+                    @(
+                        Size switch
+                        {
+                            var x when x == Sizes.Small => "text-sm px-3 py-1",
+                            var x when x == Sizes.Medium => "text-base px-4 py-2",
+                            var x when x == Sizes.Large => "text-lg px-5 py-2",
+                            _ => throw new ArgumentException($"Invalid size {Size}")
+                        }
+                    )
+                    @(
+                        CssClass.Contains("invalid") ? " invalid " :
+                        CssClass.Contains("valid") ? " valid " :
+                        " idle "
+                    )
+                '
+                @onkeypress=
+                '@(
+                    async e =>
+                    {
+                        if (e.Key != "Enter" || !OnEnterKeyPress.HasDelegate) return;
+                        await OnEnterKeyPress.InvokeAsync();
+                    }
+                )'
+            />
+
+            @if (IsPassword)
+            {
+                <div class="absolute top-0 right-0 mr-4 h-full flex items-center">
+                    <button @onclick=@(() => showPassword = !showPassword) type="button" tabindex="-1">
+                        <i class='@(showPassword ? "icon-rr-eye-crossed" : "icon-rr-eye") text-lg text-gray-500 dark:text-gray-400'></i>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <span class="text-danger-500 dark:text-danger-400 text-sm">
+            <ValidationMessage For="@ValidationFor" />
+        </span>
+    </div>
+}
+
+
+@code
+{
+    @* @todo add ParentCard loading logic *@
+
+    string errorMessage = string.Empty;
+    bool showPassword;
+
+    [Parameter, EditorRequired] public Expression<Func<string>> ValidationFor { get; set; } = default!;
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public bool IsPassword { get; set; }
+    [Parameter] public string Placeholder { get; set; } = string.Empty;
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public Sizes Size { get; set; } = Sizes.Medium;
+    [Parameter] public EventCallback OnEnterKeyPress { get; set; }
+    [Parameter] public bool ShowIf { get; set; } = true;
+    [Parameter] public string InnerClass { get; set; } = string.Empty;
+    [Parameter] public int Rows { get; set; } = 1;
+
+    protected override bool TryParseValueFromString(string? value, out string result, out string validationErrorMessage)
+    {
+        result = value ?? string.Empty;
+        validationErrorMessage = string.Empty;
+        return true;
+    }
+
+    protected override void OnInitialized()
+    {
+        EditContext.SetFieldCssClassProvider(new CssClassProvider());
+    }
+
+    class CssClassProvider : FieldCssClassProvider
+    {
+        public override string GetFieldCssClass(EditContext editContext, in FieldIdentifier fieldIdentifier)
+        {
+            if (editContext.GetValidationMessages(fieldIdentifier).Any())
+                return "invalid";
+
+            if (editContext.IsModified(fieldIdentifier))
+                return "valid";
+
+            return "idle";
+        }
+    }
+}

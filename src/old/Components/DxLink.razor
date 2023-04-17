@@ -1,0 +1,158 @@
+@inject ILogger<DxLink> logger
+
+@if (ShowIf)
+{
+    <a
+        id=@Id
+        target=@Target
+        disabled=@(!Enabled)
+        href=@Href
+        class=
+        '
+        @Class
+        tracking-wide disabled:shadow-inner
+        transition duration-75 transform rounded-lg
+        disabled:opacity-50
+        @(FullWidth ? "w-full" : "w-auto")
+        @( @* hover / click opacity effect *@
+            Variant == DxComVariant.Solid ? "hover:opacity-85 active:opacity-70" :
+            Variant == DxComVariant.Outline ? "hover:opacity-90 active:opacity-80" :
+            Variant == DxComVariant.Text ? "hover:opacity-90 active:opacity-80" :
+            Variant == DxComVariant.Link ? "hover:opacity-75 active:opacity-50" :
+            throw new ArgumentException($"Invalid variant {Variant}")
+        )
+        @( @* shadow or underline effects *@
+            Variant == DxComVariant.Solid ? "shadow-md font-medium" :
+            Variant == DxComVariant.Outline ? "shadow-md font-medium" :
+            Variant == DxComVariant.Text ? "font-medium" :
+            Variant == DxComVariant.Link ? "underline underline-offset-2" :
+            throw new ArgumentException($"Invalid variant {Variant}")
+        )
+        @( @* text and background colors*@
+            Variant == DxComVariant.Solid ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-white bg-primary-500 dark:bg-primary-400",
+                var x when x == DxComColor.Success => "text-white bg-success-500 dark:bg-success-400",
+                var x when x == DxComColor.Error => "text-white bg-danger-500 dark:bg-danger-400",
+                var x when x == DxComColor.Default => "text-slate-50 dark:text-slate-700 bg-slate-700 dark:bg-slate-50",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            Variant == DxComVariant.Outline ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-primary-500 dark:text-primary-400 bg-transparent",
+                var x when x == DxComColor.Success => "text-success-500 dark:text-success-400 bg-transparent",
+                var x when x == DxComColor.Error => "text-danger-500 dark:text-danger-400 bg-transparent",
+                var x when x == DxComColor.Default => "text-slate-700 dark:text-slate-50 bg-transparent",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            Variant == DxComVariant.Text ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-primary-500 dark:text-primary-400 bg-transparent",
+                var x when x == DxComColor.Success => "text-success-500 dark:text-success-400 bg-transparent",
+                var x when x == DxComColor.Error => "text-danger-500 dark:text-danger-400 bg-transparent",
+                var x when x == DxComColor.Default => "text-slate-700 dark:text-slate-50 bg-transparent",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            Variant == DxComVariant.Link ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "text-primary-500 dark:text-primary-400 bg-transparent",
+                var x when x == DxComColor.Success => "text-success-500 dark:text-success-400 bg-transparent",
+                var x when x == DxComColor.Error => "text-danger-500 dark:text-danger-400 bg-transparent",
+                var x when x == DxComColor.Default => "text-slate-700 dark:text-slate-50 bg-transparent",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            throw new ArgumentException($"Invalid variant {Variant}")
+        )
+        @( @* border color *@
+            Variant == DxComVariant.Outline ?
+            Color switch
+            {
+                var x when x == DxComColor.Accent => "box-border border border-primary-500 dark:border-primary-400",
+                var x when x == DxComColor.Success => "border border-success-500 dark:border-success-400",
+                var x when x == DxComColor.Error => "border border-danger-500 dark:border-danger-400",
+                var x when x == DxComColor.Default => "border border-slate-800 dark:border-slate-50",
+                _ => throw new ArgumentException($"Invalid color {Color}")
+            } :
+            ""
+        )
+        @( @* text size and paddings *@
+            Variant == DxComVariant.Solid || Variant == DxComVariant.Outline ?
+            Size switch
+            {
+                var x when x == DxComSize.Small => string.IsNullOrEmpty(Icon)
+                    ? "text-sm px-3 py-1"
+                    : "text-base p-2 inline-grid",
+                var x when x == DxComSize.Medium => string.IsNullOrEmpty(Icon)
+                    ? "text-base px-5 py-2"
+                    : "text-lg p-4 inline-grid",
+                var x when x == DxComSize.Large => string.IsNullOrEmpty(Icon)
+                    ? "text-lg px-7 py-2"
+                    : "text-xl p-6 inline-grid",
+                _ => throw new ArgumentException($"Invalid size {Size}")
+            } :
+            Size switch
+            {
+                var x when x == DxComSize.Small => string.IsNullOrEmpty(Icon)
+                    ? "text-sm px-2"
+                    : "text-base p-1 inline-grid",
+                var x when x == DxComSize.Medium => string.IsNullOrEmpty(Icon)
+                    ? "text-base px-2 py-1"
+                    : "text-lg p-2 inline-grid",
+                var x when x == DxComSize.Large => string.IsNullOrEmpty(Icon)
+                    ? "text-lg px-4 py-2"
+                    : "text-xl p-3 inline-grid",
+                _ => throw new ArgumentException($"Invalid size {Size}")
+            }
+        )
+        '
+    >
+        <div class='@(string.IsNullOrEmpty(Icon) ? "inline-flex" : "inline-grid") items-center'>
+            @if (LeftIcon != string.Empty)
+            {
+                <div class="flex-shrink-0 mr-2">
+                    <i class=@LeftIcon />
+                </div>
+            }
+
+            <span>@Text</span>
+
+            @if (RightIcon != string.Empty)
+            {
+                <div class="flex-shrink-0 ml-2">
+                    <i class=@RightIcon />
+                </div>
+            }
+
+            @if (Icon != string.Empty)
+            {
+                <div class="inline-grid">
+                    <i class=@Icon />
+                </div>
+            }
+        </div>
+        
+    </a>
+}
+
+@code
+{
+    [Parameter] public DxComColor Color { get; set; } = DxComColor.Accent;
+    [Parameter] public DxComSize Size { get; set; } = DxComSize.Medium;
+    [Parameter] public DxComVariant Variant { get; set; } = DxComVariant.Outline;
+    [Parameter] public string Target { get; set; } = string.Empty;
+
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public string LeftIcon { get; set; } = string.Empty;
+    [Parameter] public string RightIcon { get; set; } = string.Empty;
+    [Parameter] public bool FullWidth { get; set; } = false;
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public string Id { get; set; } = string.Empty;
+    [Parameter] public bool ShowIf { get; set; } = true;
+    [Parameter] public string Icon { get; set; } = string.Empty;
+    [Parameter] public string Href { get; set; } = string.Empty;
+}

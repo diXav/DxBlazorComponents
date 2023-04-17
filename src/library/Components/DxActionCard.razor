@@ -1,0 +1,61 @@
+@inject IJSRuntime js
+
+<CascadingValue Value='this'>
+    @* Main container *@
+    <div
+        id='@state.Id'
+        class='@Class dxactioncard-parent flex flex-col'
+    >
+
+        @* Content *@
+        <div
+            class='
+            dxactioncard-content
+            relative flex flex-col items-start grow
+            '
+        >
+
+            @Content
+
+            @* Menu *@
+            @if (Menu != null && state.MenuVisible)
+            {
+                <div
+                    class='
+                    dxactioncard-menu
+                    w-full h-full absolute top-0 left-0
+                    flex items-center justify-evenly
+                    '
+                >
+                    @Menu
+                </div>
+            }
+
+            @* Open / Close Menu Button *@
+            @if (Menu != null)
+            {
+                <DxButton
+                    class="dxactioncard-menubutton absolute"
+                    IsDisabled=state.Disabled
+                    OnClick='@(() => state.MenuVisible = !state.MenuVisible)'
+                    IconClass='@(state.MenuVisible ? "dxactioncard-closeicon" : "dxactioncard-openicon")'
+                />
+            }
+        </div>
+
+        @* Action Menu *@
+        @if (ActionMenu != null)
+        {
+            <div class="dxactioncard-actionmenu w-full flex items-center mt-1">
+                <span class="dxactioncard-infotext ml-4">
+                    @InfoText
+                </span>
+
+                <div class="grow"></div>
+
+                @ActionMenu
+            </div>
+        }
+
+    </div>
+</CascadingValue>
