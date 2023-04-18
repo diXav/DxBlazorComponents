@@ -1,7 +1,89 @@
 /* 
-variant solid
+general style
 */
+.dxspin
+{
+    @apply h-4 w-4
+}
+
+/* solid variant color */
 .dxspin._solid
 {
     @apply border-white dark:border-slate-800
+}
+
+/* 
+outline, text and link variants color (background-circle)
+*/
+.dxspin._outline._default > div:nth-of-type(1),
+.dxspin._text._default > div:nth-of-type(1),
+.dxspin._link._default > div:nth-of-type(1)
+{
+    @apply border-slate-800 dark:border-white
+}
+
+.dxspin._outline._primary > div:nth-of-type(1),
+.dxspin._text._primary > div:nth-of-type(1),
+.dxspin._link._primary > div:nth-of-type(1)
+{
+    @apply border-primary-500 dark:border-primary-400
+}
+
+.dxspin._outline._secondary > div:nth-of-type(1),
+.dxspin._text._secondary > div:nth-of-type(1),
+.dxspin._link._secondary > div:nth-of-type(1)
+{
+    @apply border-secondary-500 dark:border-secondary-400
+}
+
+.dxspin._outline._success > div:nth-of-type(1),
+.dxspin._text._success > div:nth-of-type(1),
+.dxspin._link._success > div:nth-of-type(1)
+{
+    @apply border-success-500 dark:border-success-400
+}
+
+.dxspin._outline._error > div:nth-of-type(1),
+.dxspin._text._error > div:nth-of-type(1),
+.dxspin._link._error > div:nth-of-type(1)
+{
+    @apply border-error-500 dark:border-error-400
+}
+
+/* 
+outline, text and link variants color (foreground-border)
+*/
+.dxspin._outline._default > div:nth-of-type(1),
+.dxspin._text._default > div:nth-of-type(1),
+.dxspin._link._default > div:nth-of-type(1)
+{
+    @apply border-slate-800 dark:border-white
+}
+
+.dxspin._outline._primary > div:nth-of-type(1),
+.dxspin._text._primary > div:nth-of-type(1),
+.dxspin._link._primary > div:nth-of-type(1)
+{
+    @apply border-primary-500 dark:border-primary-400
+}
+
+.dxspin._outline._secondary > div:nth-of-type(1),
+.dxspin._text._secondary > div:nth-of-type(1),
+.dxspin._link._secondary > div:nth-of-type(1)
+{
+    @apply border-secondary-500 dark:border-secondary-400
+}
+
+.dxspin._outline._success > div:nth-of-type(1),
+.dxspin._text._success > div:nth-of-type(1),
+.dxspin._link._success > div:nth-of-type(1)
+{
+    @apply border-success-500 dark:border-success-400
+}
+
+.dxspin._outline._error > div:nth-of-type(1),
+.dxspin._text._error > div:nth-of-type(1),
+.dxspin._link._error > div:nth-of-type(1)
+{
+    @apply border-error-500 dark:border-error-400
 }
